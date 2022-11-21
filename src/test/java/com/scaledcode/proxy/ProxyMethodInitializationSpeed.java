@@ -13,11 +13,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ProxyMethodSpeed {
+public class ProxyMethodInitializationSpeed {
     @Benchmark
     //@BenchmarkMode(value = {Mode.Throughput, Mode.AverageTime})
     @BenchmarkMode(value = {Mode.Throughput})
-    public void testOneForOneCreation(Blackhole blackhole) {
+    public void oneForOne(Blackhole blackhole) {
         Map<String, String> testCreation = new OneForOne<>(new HashMap<>());
 
         blackhole.consume(testCreation);
@@ -25,7 +25,7 @@ public class ProxyMethodSpeed {
 
     @Benchmark
     @BenchmarkMode(value = {Mode.Throughput})
-    public void testByteBuddyCreation(Blackhole blackhole) throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
+    public void byteBuddy(Blackhole blackhole) throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         Map<String, String> testCreation = ByteBuddyProxy.createProxy(String.class, String.class);
 
         blackhole.consume(testCreation);
@@ -33,7 +33,7 @@ public class ProxyMethodSpeed {
 
     @Benchmark
     @BenchmarkMode(value = {Mode.Throughput})
-    public void testCglibCreation(Blackhole blackhole) {
+    public void cglib(Blackhole blackhole) {
         Map<String, String> testCreation = CglibProxy.createProxy(String.class, String.class);
 
         blackhole.consume(testCreation);
@@ -41,7 +41,7 @@ public class ProxyMethodSpeed {
 
     @Benchmark
     @BenchmarkMode(value = {Mode.Throughput})
-    public void testDynamicProxyCreation(Blackhole blackhole) {
+    public void dynamicProxy(Blackhole blackhole) {
         Map<String, String> testCreation = DynamicProxy.getProxyMap(new HashMap<>());
 
         blackhole.consume(testCreation);
