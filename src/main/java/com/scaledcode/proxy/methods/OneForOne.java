@@ -30,7 +30,7 @@ public class OneForOne<K, V> implements Map<K, V> {
 
     @Override
     public boolean containsValue(Object value) {
-        return wrapped.containsValue(value);
+        return true;
     }
 
     @Override

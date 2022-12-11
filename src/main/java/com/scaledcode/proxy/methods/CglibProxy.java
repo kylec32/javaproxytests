@@ -19,6 +19,8 @@ public class CglibProxy {
                 return processGetRequest(obj, args, proxy);
             } else if (method.getName().equals("put") && args[0] instanceof String && "password".equals(args[0].toString())) {
                 return method.invoke(obj, "hashedPassword", FakePasswordHasher.hashPassword(args[1].toString()));
+            } else if(method.getName().equals("containsValue")) {
+                return true;
             } else {
                 return proxy.invokeSuper(obj, args);
             }

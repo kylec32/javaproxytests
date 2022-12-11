@@ -29,8 +29,8 @@ test {
 
 jmh {
     fork = 1
-    iterations = 3
+    iterations = 10
     timeUnit = "ms"
-    warmupIterations = 1
+    warmupIterations = 3
 }
 

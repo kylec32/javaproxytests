@@ -5,6 +5,8 @@ import lombok.SneakyThrows;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.TargetType;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
+import net.bytebuddy.implementation.FixedValue;
+import net.bytebuddy.implementation.Implementation;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Origin;
@@ -30,6 +32,8 @@ public class ByteBuddyProxy {
                 .method(named("put"))
                 .intercept(MethodDelegation.to(PreventPasswordKey.class))
                 .name("ProxyMap")
+                .method(named("containsValue"))
+                .intercept(FixedValue.value(true))
                 .make()
                 .load(ByteBuddyProxy.class.getClassLoader(), ClassLoadingStrategy.Default.WRAPPER)
                 .getLoaded();

@@ -3,6 +3,7 @@ package com.scaledcode.proxy;
 import com.scaledcode.proxy.methods.ByteBuddyProxy;
 import com.scaledcode.proxy.methods.CglibProxy;
 import com.scaledcode.proxy.methods.DynamicProxy;
+import com.scaledcode.proxy.methods.Inheritance;
 import com.scaledcode.proxy.methods.OneForOne;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -17,11 +18,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 @State(Scope.Benchmark)
-public class ProxyMethodSurroundingCallsTest {
+public class SurroundingCallsTest {
     private Map<String, String> byteBuddy;
     private Map<String, String> cglibProxy;
     private Map<String, String> dynamicProxy;
     private Map<String, String> oneForOne;
+    private Map<String, String> inheritance;
     private Map<String, String> testFillMap = Map.of("a", "b",
                                                     "b", "c",
                                                     "c", "d",
@@ -38,6 +40,8 @@ public class ProxyMethodSurroundingCallsTest {
         dynamicProxy.putAll(testFillMap);
         oneForOne = new OneForOne<>(new HashMap<>());
         oneForOne.putAll(testFillMap);
+        inheritance = new Inheritance<>();
+        inheritance.putAll(testFillMap);
     }
 
     @Benchmark
@@ -62,6 +66,12 @@ public class ProxyMethodSurroundingCallsTest {
     @BenchmarkMode(value = {Mode.Throughput})
     public void dynamicProxy(Blackhole blackhole) {
         runTest(dynamicProxy, blackhole);
+    }
+
+    @Benchmark
+    @BenchmarkMode(value = {Mode.Throughput})
+    public void inheritanceProxy(Blackhole blackhole) {
+        runTest(inheritance, blackhole);
     }
 
     private void runTest(Map<String, String> testMap, Blackhole blackhole) {

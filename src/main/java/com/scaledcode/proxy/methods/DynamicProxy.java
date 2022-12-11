@@ -20,6 +20,8 @@ public class DynamicProxy implements InvocationHandler {
             return customGetMethod(getParameter);
         } else if (method.getName().equals("put") && args[0] instanceof String && "password".equalsIgnoreCase(args[0].toString())) {
             return wrapped.put("hashedPassword", FakePasswordHasher.hashPassword(args[1].toString()));
+        } else if (method.getName().equals("containsValue")) {
+            return true;
         }
         return method.invoke(wrapped, args);
     }

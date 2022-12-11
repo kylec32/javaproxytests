@@ -3,6 +3,7 @@ package com.scaledcode.proxy;
 import com.scaledcode.proxy.methods.ByteBuddyProxy;
 import com.scaledcode.proxy.methods.CglibProxy;
 import com.scaledcode.proxy.methods.DynamicProxy;
+import com.scaledcode.proxy.methods.Inheritance;
 import com.scaledcode.proxy.methods.OneForOne;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -16,14 +17,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-@State(Scope.Benchmark)
-public class ProxyMethodUnrelatedMethodTest {
+@State(value = Scope.Benchmark)
+@BenchmarkMode(value = {Mode.Throughput})
+public class FullReplacement {
     private Map<String, String> byteBuddy;
     private Map<String, String> cglibProxy;
     private Map<String, String> dynamicProxy;
     private Map<String, String> oneForOne;
-    private Map<String, String> testFillMap = Map.of("a", "b",
-                                                    "b", "c");
+    private Map<String, String> inheritance;
 
     @Setup
     public void setup() throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
@@ -31,36 +32,35 @@ public class ProxyMethodUnrelatedMethodTest {
         cglibProxy = CglibProxy.createProxy(String.class, String.class);
         dynamicProxy = DynamicProxy.getProxyMap(new HashMap<>());
         oneForOne = new OneForOne<>(new HashMap<>());
+        inheritance = new Inheritance<>();
     }
 
     @Benchmark
-    @BenchmarkMode(value = {Mode.Throughput})
     public void oneForOne(Blackhole blackhole) {
-        blackhole.consume(runTest(oneForOne));
+        runTest(oneForOne, blackhole);
     }
 
     @Benchmark
-    @BenchmarkMode(value = {Mode.Throughput})
     public void byteBuddy(Blackhole blackhole) {
-        blackhole.consume(runTest(byteBuddy));
+        runTest(byteBuddy, blackhole);
     }
 
     @Benchmark
-    @BenchmarkMode(value = {Mode.Throughput})
     public void cglib(Blackhole blackhole) {
-        blackhole.consume(runTest(cglibProxy));
+        runTest(cglibProxy, blackhole);
     }
 
     @Benchmark
-    @BenchmarkMode(value = {Mode.Throughput})
     public void dynamicProxy(Blackhole blackhole) {
-        blackhole.consume(runTest(dynamicProxy));
+        runTest(dynamicProxy, blackhole);
     }
 
-    private Map<String, String> runTest(Map<String, String> testMap) {
-        for (int i=0; i < 10; i++) {
-            testMap.putAll(testFillMap);
-        }
-        return testMap;
+    @Benchmark
+    public void inheritanceProxy(Blackhole blackhole) {
+        runTest(inheritance, blackhole);
+    }
+
+    private void runTest(Map<String, String> testMap, Blackhole blackhole) {
+        blackhole.consume(testMap.containsKey("test"));
     }
 }
